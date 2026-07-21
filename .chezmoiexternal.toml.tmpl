@@ -1,0 +1,15 @@
+{{- if and (not .ephemeral) (not .headless) }}
+{{-   $fontDir := "" }}
+{{-   $fontName := "FiraCode" }}
+{{-   if eq .chezmoi.os "darwin" }}
+{{-     $fontDir = printf "Library/Fonts/%s" $fontName }}
+{{-   else if eq .chezmoi.os "linux" }}
+{{-     $fontDir = printf ".local/share/fonts/%s" $fontName }}
+{{-   else if eq .chezmoi.os "windows" }}
+{{-     $fontDir = "AppData/Local/Microsoft/Windows/Fonts" }}
+{{-   end }}
+["{{ $fontDir }}"]
+    type = "archive"
+    url = {{ gitHubLatestReleaseAssetURL "ryanoasis/nerd-fonts" "{{ $fontName }}.tar.xz" | quote }}
+    refreshPeriod = "168h"
+{{- end }}

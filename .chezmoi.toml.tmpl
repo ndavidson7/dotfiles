@@ -11,10 +11,13 @@
 {{-   $headless = true -}}
 {{- end -}}
 
+{{/* detect WSL distributions */}}
+{{- if and (eq .chezmoi.os "linux") (.chezmoi.kernel.osrelease | lower | contains "microsoft") -}}
+{{-   $headless = true -}}
+{{- end -}}
+
 {{- if not $ephemeral -}}
 {{-   if stdinIsATTY -}}
-{{-     $headless = promptBoolOnce . "headless" "Is this machine headless" -}}
-{{-     $ephemeral = promptBoolOnce . "ephemeral" "Is this machine ephemeral" -}}
 {{-     $personal = promptBoolOnce . "personal" "Is this machine personal" -}}
 {{-     $work = promptBoolOnce . "work" "Is this machine for work" -}}
 {{-   else -}}
