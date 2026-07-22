@@ -1,0 +1,11 @@
+# Enable completions
+autoload -Uz compinit && compinit
+
+# Add .NET completions
+eval "$(dotnet completions script zsh)"
+
+# Add .NET tools to path
+path+=$HOME/.dotnet/tools
+
+# Use Starship prompt (must come last)
+eval "$(starship init zsh)"
