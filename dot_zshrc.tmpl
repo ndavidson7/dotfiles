@@ -7,5 +7,7 @@ eval "$(dotnet completions script zsh)"
 # Add .NET tools to path
 path+=$HOME/.dotnet/tools
 
+path+=$HOME/.local/bin
+
 # Use Starship prompt (must come last)
 eval "$(starship init zsh)"

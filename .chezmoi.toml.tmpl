@@ -1,39 +1,33 @@
 {{/* boolean feature tags */}}
-{{- $ephemeral := false -}}{{/* true if this machine is ephemeral, e.g. a cloud or VM instance */}}
+{{- $personal := false -}}{{/* true if this machine should have personal secrets */}}
 {{- $work := false -}}{{/* true if this machine is a work machine */}}
 {{- $headless := false -}}{{/* true if this machine does not have a screen and keyboard */}}
-{{- $personal := false -}}{{/* true if this machine should have personal secrets */}}
-{{- "" -}}
-
-{{/* detect GitHub codespaces, VSCode remote containers, Docker containers, Multipass VMs, and Vagrant boxes */}}
-{{- if or (env "CODESPACES") (env "REMOTE_CONTAINERS_IPC") (eq .chezmoi.username "root" "ubuntu" "vagrant" "vscode") -}}
-{{-   $ephemeral = true -}}
-{{-   $headless = true -}}
-{{- end -}}
 
 {{/* detect WSL distributions */}}
-{{- if and (eq .chezmoi.os "linux") (.chezmoi.kernel.osrelease | lower | contains "microsoft") -}}
+{{- if and (eq .chezmoi.os "linux") (or (.chezmoi.kernel.osrelease | lower | contains "microsoft") (.chezmoi.osRelease.variant | lower | contains "wsl")) -}}
 {{-   $headless = true -}}
 {{- end -}}
 
-{{- if not $ephemeral -}}
-{{-   if stdinIsATTY -}}
-{{-     $personal = promptBoolOnce . "personal" "Is this machine personal" -}}
-{{-     $work = promptBoolOnce . "work" "Is this machine for work" -}}
-{{-   else -}}
-{{-     $ephemeral = true -}}
-{{-     $headless = true -}}
-{{-   end -}}
+{{- if stdinIsATTY -}}
+{{-   $personal = promptBoolOnce . "personal" "Should this machine have personal secrets?" -}}
+{{-   $work = promptBoolOnce . "work" "Is this machine for work?" -}}
+{{- else -}}
+{{-   $headless = true -}}
 {{- end -}}
 
 {{- $email := "nicholasdavidson@proton.me" -}}
 {{- if $work -}}
-{{-   $email = promptStringOnce . "email" "What is your email address" -}}
+{{-   $email = promptStringOnce . "email" "What is your email address?" -}}
+{{- end -}}
+
+{{- $font := "FiraCode" -}}
+{{- if not $headless -}}
+{{-   $font := promptStringOnce . "font" "Which nerd font do you want to use?" $font -}}
 {{- end -}}
 
 [data]
-    ephemeral = {{ $ephemeral }}
-    email = {{ $email | quote }}
+    personal = {{ $personal }}
     work = {{ $work }}
     headless = {{ $headless }}
-    personal = {{ $personal }}
+    email = {{ $email | quote }}
+    font = {{ $font | quote }}
